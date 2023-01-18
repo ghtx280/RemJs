@@ -1,5 +1,5 @@
 ### **A very compact and small library that provides reactivity technology to your code, like vue or react.**
-## usage
+## Usage
 ```html
 <script src="https://blick.netlify.app/app-4.min.js"></script>
 ```

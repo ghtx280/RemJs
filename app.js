@@ -1,66 +1,46 @@
-let blickData
-let blickWatches = [];
-const blickStore = {}
-
-class BlickApp {
-
+let Rem_Data
+let Rem_Watches = [];
+const Rem_Store = {}
+const RemJs = {
   data(dt){
-    blickData = new Proxy(dt, {
+    Rem_Data = new Proxy(dt, {
       get(c, a) {
         return Reflect.get(c, a)
       },
       set(d, a, b) {  
-        // console.log(d, a, b); 
         let old = d[a]
-        blickWatches.forEach(wch=>{if (a === wch.var || wch.var === true) wch.func(old,b)})
+        Rem_Watches.forEach(wch=>{
+          if (a === wch.var || wch.var === true) wch.func(old,b)
+        })
         d[a] = b
         update(a, old, b, a)
       }
     })
-    return blickData
-  }
-
+    return Rem_Data
+  },
   watch(a,b){
-    blickWatches.push({
-      var:a,
-      func:b
-    })
-  }
-
+    Rem_Watches.push({ var:a, func:b })
+  },
   mounted(e){
     addEventListener("DOMContentLoaded",e)
   }
-
 }
 
-
-const end = (c, a) => c.slice(0, -a);
-const keywords = 'do,if,for,let,new,try,var,case,else,with,await,break,catch,class,const,super,throw,while,yield,delete,export,import,return,switch,default,extends,finally,continue,debugger,function,arguments,typeof,void'
-const checkKeywords = (a, b) => Boolean(a.split(',').filter(el => b.includes(el)).length)
-
-
-const js = str => {
+function Rem_js(str) {
+  const keywords = 'do,if,for,let,new,try,var,case,else,with,await,break,catch,class,const,super,throw,while,yield,delete,export,import,return,switch,default,extends,finally,continue,debugger,function,arguments,typeof,void'
+  const checkKeywords = (a, b) => Boolean(a.split(',').filter(el => b.includes(el)).length)
+  
   if (!checkKeywords(keywords, String(str))) {
-    Object.keys(blickData).forEach(el => {
-      if (str.includes(el) && !str.includes('blickData.'+el)) {
-        str = str.replaceAll(el, 'blickData.' + el)
+    Object.keys(Rem_Data).forEach(el => {
+      if (str.includes(el) && !str.includes('Rem_Data.'+el)) {
+        str = str.replaceAll(el, 'Rem_Data.' + el)
       }
     })
     return new Function(`return ${str}`)()
   }
 }
 
-const q = e => document.querySelectorAll(e)
-
-const attr = (elem, str, st, val) => {
-  if (st=="has") return elem.hasAttribute(str)
-  if (st=="set") return elem.setAttribute(str, val)
-  if (st=="get") return elem.getAttribute(str)
-  else return elem.getAttribute(str)
-}
-
-
-function parseAttr(b){
+function Rem_parseAttr(b){
   const c=[],d=(d,a)=>c.push({prop:d,value:a}),
   e=a=>a.slice(0,a.indexOf(":")).trim(),
   f=a=>a.slice(a.indexOf(":")+1).trim(),
@@ -71,39 +51,36 @@ function parseAttr(b){
 }
 
 function update(zm, old, nw, pr) {
-  blickStore[zm]?.forEach(e=>{
-    
+  Rem_Store[zm]?.forEach(e=>{
     if (e.bind) {
-      parseAttr(e.bind).forEach(sho =>{
+      for (const sho of Rem_parseAttr(e.bind)) {
         if (sho.prop == 'class') sho.prop = 'className'
         if (sho.prop == 'text')  sho.prop = 'innerText'
         
         if (sho.prop == 'this') {
-          if (blickData[sho.value] != e.el) blickData[sho.value] = e.el 
+          if (Rem_Data[sho.value] != e.el) Rem_Data[sho.value] = e.el 
         }
         else if (sho.prop == 'className') {
           if (old !== undefined) {
             old = typeof old === 'string' ? `"${old}"` : old
-            e.el.classList.remove(js(sho.value.replaceAll(zm,old)))
-            e.el.classList.add(js(sho.value))
+            e.el.classList.remove(Rem_js(sho.value.replaceAll(zm,old)))
+            e.el.classList.add(Rem_js(sho.value))
           }
           else{
-            console.log(js(sho.value));
-            if (!e.el.className.includes(js(sho.value))) {
-              e.el.className += ' ' + js(sho.value)
+            console.log(Rem_js(sho.value));
+            if (!e.el.className.includes(Rem_js(sho.value))) {
+              e.el.className += ' ' + Rem_js(sho.value)
             }
           }
         }
         else if (sho.prop == 'innerText'){
-          if (blickData[sho.value] != e.el[sho.prop] ) blickData[sho.value] = e.el[sho.prop] 
+          if (Rem_Data[sho.value] != e.el[sho.prop] ) Rem_Data[sho.value] = e.el[sho.prop] 
         }
-        else e.el[sho.prop] = js(sho.value)
-        
-        
-      })
+        else e.el[sho.prop] = Rem_js(sho.value)
+      }
     }
     if (e.if) {
-      if(js(e.if)){
+      if(Rem_js(e.if)){
         e.el.append(...e.html)
       }
       else {
@@ -111,9 +88,9 @@ function update(zm, old, nw, pr) {
       }
     }
     if (e.css) {
-      parseAttr(e.css).forEach(sho =>{
-        e.el.style[sho.prop] = js(sho.value)
-      })
+      for (const sho of Rem_parseAttr(e.css)) {
+        e.el.style[sho.prop] = Rem_js(sho.value)
+      }
     }
     if (e.in) {
       let g = e.in
@@ -121,40 +98,44 @@ function update(zm, old, nw, pr) {
       let d = h.map(a => a.slice(1, a.length-1).trim())
 
       for (let c in h) {
-        g = g.replaceAll(h[c], js(d[c]))
+        g = g.replaceAll(h[c], Rem_js(d[c]))
       }
-
+      
       e.el.innerHTML = g
     }
   })
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (blickData) {
-    Object.keys(blickData).forEach(key =>{if(typeof(blickData[key])!='function')blickStore[key]=[]})
+  if (Rem_Data) {
+    for (const key of Object.keys(Rem_Data)) {
+      if(typeof(Rem_Data[key]) !== 'function') Rem_Store[key] = []
+    }
   }
 
   function setStore(elem,str){
-    Object.keys(blickStore).forEach(key =>{
-      if (attr(elem,str).includes(key)||elem.innerText.includes(key)){
+    for (const key of Object.keys(Rem_Store)) {
+      if (elem.getAttribute(str).includes(key)||elem.innerText.includes(key)){
         let obj = {el:elem}
-        if (str === 'in') obj[str] = elem.innerText
+        if (str === 'in') {
+          obj[str] = elem.innerText
+        }
         else {
           if (str === 'if') {
             obj.html = Array.from(elem.children)
           }
-          obj[str] = attr(elem,str)
+          obj[str] = elem.getAttribute(str)
         }
-        blickStore[key].push(obj)
+        Rem_Store[key].push(obj)
       }
       update(key)
-    })
+    }
   }
 
   const selectors = 'on,in,if,bind,css'
-  const querySelAll = selectors.split(',').map(sel => '['+sel+']').join()
+  const querySelAll = selectors.split(',').map(sel => `[${sel}]`).join()
 
-  q(querySelAll).forEach(el => {
+  for (const el of document.querySelectorAll(querySelAll)) {
     if (el.hasAttribute('in')  ) {
       setStore(el,'in')  
       el.removeAttribute('in')
@@ -169,22 +150,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (el.hasAttribute('bind')) {
       let ev = 'change'
-      let at = attr(el, 'bind')
+      let at = el.getAttribute('bind')
       if (at.includes('value') || at.includes('checked')) {
-        parseAttr(at).forEach(pars=>{
+        Rem_parseAttr(at).forEach(pars=>{
           if (pars.prop == 'value') ev = 'input'
-          el.addEventListener(ev, ()=>{blickData[pars.value] = el[pars.prop]})
+          el.addEventListener(ev, ()=>{Rem_Data[pars.value] = el[pars.prop]})
         })
       }
       setStore(el,'bind')
       el.removeAttribute('bind')
     }   
     if (el.hasAttribute('on')) {
-      parseAttr(attr(el, 'on')).forEach(pars=>{
-        el.addEventListener(pars.prop,function(){js(pars.value)})
+      Rem_parseAttr(el.getAttribute('on')).forEach(pars=>{
+        el.addEventListener(pars.prop,function(){Rem_js(pars.value)})
       })
       el.removeAttribute('on')
     }
-  })
-  
+  }
 })

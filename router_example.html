@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://remjs.netlify.app/app.min.js"></script>
+</head>
+<body>
+
+  <a href="#">home</a>
+  <a href="#about">about</a>
+  <a bind="href:link">num</a>
+
+  <div if="!route">
+    <h1>home</h1>
+  </div>
+
+  <div if="route === 'about'">
+    <h1>about</h1>
+  </div>
+
+  <div if="route === 'num'">
+    <h1 in>{prop}</h1>
+  </div>
+
+  <script>
+    let dt = RemJs.data({
+      route:'',
+      prop: '',
+      link: `#num/${Math.floor(Math.random()*1000)}`
+    })
+
+    function hashChanged() {
+      dt.route = location.hash.slice(1).split('/')[0]
+      dt.prop  = location.hash.slice(1).split('/')[1]
+    }hashChanged()
+    
+    addEventListener("hashchange",hashChanged) 
+  </script>
+
+</body>
+</html>

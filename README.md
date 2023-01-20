@@ -41,7 +41,7 @@ To change variables through a script, use the object that will return app.data()
 <script> 
   const dt = RemJs.data({ color:'red' })
   
-  setTimeout(()=>{ data.color = 'blue' }, 2000)
+  setTimeout(()=>{ dt.color = 'blue' }, 1000)
 </script>
 ```
 live preview [click](https://remjs.netlify.app/tests/2)

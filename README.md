@@ -1,24 +1,21 @@
 ### **A very compact and small library that provides reactivity technology to your code, like vue or react.**
 ## Usage
 ```html
-<script src="https://blick.netlify.app/app-4.min.js"></script>
+<script src="https://remjs.netlify.app/app.min.js"></script>
 ```
 Put this code in your `head` tag
 ***
 After you've included the library, add the code below to your `body` tag
 ```html
-<h1 in>count is: {count}</h1>
-<button on="click: count++">add</button>
+<button on="click: count++" in>
+  count is: {count}
+</button>
 
 <script>
-  const app = new BlickApp()
-  
-  const data = app.data({
-    count: 0
-  })
+  RemJs.data({ count:0 })
 </script>
 ```
-live preview [click](https://blick.netlify.app/tests/1)
+live preview [click](https://remjs.netlify.app/tests/1)
 ***
 Use special attributes to change the content on the page:
 - if - hides or shows the element depending on the condition `if="cond"` 
@@ -41,14 +38,10 @@ To change variables through a script, use the object that will return app.data()
 ```html
 <h1 in>color is: {color}</h1>
 
-<script>
-  const app = new BlickApp()
-  
-  const data = app.data({
-    color: 'red'
-  })
+<script> 
+  const dt = RemJs.data({ color:'red' })
   
   setTimeout(()=>{ data.color = 'blue' }, 2000)
 </script>
 ```
-live preview [click](https://blick.netlify.app/tests/2)
+live preview [click](https://remjs.netlify.app/tests/2)

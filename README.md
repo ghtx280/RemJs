@@ -36,11 +36,16 @@ example: `<input bind="value: userName>"`
 ****
 To change variables through a script, use the object that will return app.data()
 ```html
-<h1 in>color is: {color}</h1>
+<h1>
+  color is:
+  <span css="color:color" in>
+    {color}
+  </span>
+</h1>
 
 <script> 
   const dt = RemJs.data({ color:'red' })
-  
+    
   setTimeout(()=>{ dt.color = 'blue' }, 1000)
 </script>
 ```

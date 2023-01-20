@@ -34,7 +34,7 @@ example: `css="color: isValid ? 'green' : 'red'"`
 
 example: `<input bind="value: userName>"`
 ****
-To change variables through a script, use the object that will return app.data()
+To change variables through a script, use the object that will return data()
 ```html
 <h1>
   color is:

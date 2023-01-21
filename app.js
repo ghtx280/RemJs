@@ -13,7 +13,7 @@ const RemJs = {
           if (a === wch.var || wch.var === true) wch.func(old,b)
         })
         d[a] = b
-        update(a, old, b, a)
+        Rem_Update(a, old, b, a)
       }
     })
     return Rem_Data
@@ -50,7 +50,7 @@ function Rem_parseAttr(b){
   :b.includes("&")?g():d(e(b),f(b)),c
 }
 
-function update(zm, old, nw, pr) {
+function Rem_Update(zm, old, nw, pr) {
   Rem_Store[zm]?.forEach(e=>{
     if (e.bind) {
       for (const sho of Rem_parseAttr(e.bind)) {
@@ -80,6 +80,7 @@ function update(zm, old, nw, pr) {
       }
     }
     if (e.if) {
+      
       if(Rem_js(e.if)){
         e.el.append(...e.html)
       }
@@ -114,21 +115,34 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setStore(elem,str){
-    for (const key of Object.keys(Rem_Store)) {
-      if (elem.getAttribute(str).includes(key)||elem.innerText.includes(key)){
-        let obj = {el:elem}
-        if (str === 'in') {
-          obj[str] = elem.innerText
+    if (str === 'in') {
+      let elStr = elem.innerText
+      let keys = elStr
+      .match(/\{([^}]+)\}/g)
+      .map(a=>a.slice(1,a.length-1).trim())
+
+      for (const key in Rem_Store) {
+        if (keys.includes(key)) {
+          Rem_Store[key].push({
+            el:elem,
+            [str]:elStr
+          })
         }
-        else {
+        Rem_Update(key)
+      }
+    }
+    else{
+      for (const key in Rem_Store) {
+        if (elem.getAttribute(str).includes(key)){
+          let obj = {el:elem}
           if (str === 'if') {
             obj.html = Array.from(elem.children)
           }
           obj[str] = elem.getAttribute(str)
+          Rem_Store[key].push(obj)
         }
-        Rem_Store[key].push(obj)
+        Rem_Update(key)
       }
-      update(key)
     }
   }
 

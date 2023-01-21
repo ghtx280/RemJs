@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .map(a=>a.slice(1,a.length-1).trim())
 
       for (const key in Rem_Store) {
-        if (keys.includes(key)) {
+        if (keys.filter(e=>e.includes(key))) {
           Rem_Store[key].push({
             el:elem,
             [str]:elStr

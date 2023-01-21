@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://remjs.netlify.app/app.min.js"></script>
+  <style>
+    body{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1{
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>
+    color is:
+    <span css="color:color" in>
+      {color}
+    </span>
+  </h1>
+
+  <script> 
+    const dt = RemJs.data({ color:'red' })
+    
+    setTimeout(()=>{ dt.color = 'blue' }, 1000)
+  </script>
+
+</body>
+</html>

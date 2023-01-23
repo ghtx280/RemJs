@@ -15,6 +15,7 @@ const RemJs = {
         })
         d[a] = b
         Rem_Update(a, old, b, a)
+        // console.log(123);
       }
     })
     return Rem_Data
@@ -26,6 +27,7 @@ const RemJs = {
     addEventListener("DOMContentLoaded", e)
   }
 }
+
 
 function Rem_js(str) {
   const keywords = 'do,if,for,let,new,try,var,case,else,with,await,break,catch,class,const,super,throw,while,yield,delete,export,import,return,switch,default,extends,finally,continue,debugger,function,arguments,typeof,void'
@@ -52,7 +54,9 @@ function Rem_parseAttr(b) {
 }
 
 function Rem_Update(zm, old, nw, pr) {
+  // console.log(zm);
   Rem_Store[zm]?.forEach(e => {
+    // console.log(e);
     if (e.bind) {
       for (const sho of Rem_parseAttr(e.bind)) {
         if (sho.prop == 'class') sho.prop = 'className'
@@ -98,21 +102,22 @@ function Rem_Update(zm, old, nw, pr) {
       e.el.innerHTML = ''
 
       for (const i in Rem_Data[e.for]) {
-        let elem = createElement(e.html)[0].cloneNode(true)
-        let isIn = elem.hasAttribute('in')
-        let text = elem.innerText.replaceAll('$$', `${e.for}[${i}]`)
+        let elem = createElement(e.html)[0]?.cloneNode(true)
+        if (!elem) break
+        // let isIn = elem.hasAttribute('in')
+        let text = elem.innerHTML.replaceAll('$', `${e.for}[${i}]`)
         let prv = text
 
-        if (isIn) {
+        // if (isIn) {
           let h = text.match(/\{([^}]+)\}/g)
-          let d = h.map(a => a.slice(1, a.length - 1).trim())
+          let d = h?.map(a => a.slice(1, a.length - 1).trim())
           for (let c in d) {
             text = text.replaceAll(h[c], Rem_js(d[c]))
           }
           elem.removeAttribute('in')
-        }
+        // }
 
-        elem.innerText = text
+        elem.innerHTML = text
         e.el.append(elem)
         setStore(elem, 'in', prv, i)
       }
@@ -126,7 +131,7 @@ function Rem_Update(zm, old, nw, pr) {
         g = g.replaceAll(h[c], Rem_js(d[c]))
       }
 
-      e.el.innerText = g
+      e.el.innerHTML = g
     }
 
   })
@@ -143,9 +148,9 @@ function setStore(elem, str, prevStr, id) {
     let elStr = prevStr || elem.innerText
     let keys = elStr
       .match(/\{([^}]+)\}/g)
-      .map(a => a.slice(1, a.length - 1).trim())
+      ?.map(a => a.slice(1, a.length - 1).trim())
     for (const key in Rem_Store) {
-      if (keys.filter(e => e.includes(key)).length) {
+      if (keys?.filter(e => e.includes(key)).length) {
         if (id) {
           let curID = Rem_Store[key].filter(e => e.k == id)
           if (!curID.length) {
@@ -191,14 +196,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+
+
   const selectors = 'on,in,if,bind,css'
   const querySelAll = selectors.split(',').map(sel => `[${sel}]`).join()
 
   for (const el of document.querySelectorAll('[for]')) {
     setStore(el, 'for')
+    el.removeAttribute('for')
   }
   for (const el of document.querySelectorAll('[in]')) {
     setStore(el, 'in')
+    el.removeAttribute('in')
   }
 
   for (const el of document.querySelectorAll(querySelAll)) {
@@ -231,6 +240,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   for (const key in Rem_Store) {
+    // console.log(Rem_Store)
     Rem_Update(key)
+    // Rem_Store[key]?.forEach(e=>{console.log(e,key);})
   }
+
+  // console.log(Rem_Store);
 })

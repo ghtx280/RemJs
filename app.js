@@ -1,9 +1,9 @@
-let Rem_Data_Obj
+let Rem_Data
 let Rem_Watches = [];
 const Rem_Store = {}
 const RemJs = {
   data(dt){
-    Rem_Data_Obj = new Proxy(dt, {
+    Rem_Data = new Proxy(dt, {
       get(c, a) {
         return Reflect.get(c, a)
       },
@@ -16,7 +16,7 @@ const RemJs = {
         Rem_Update(a, old, b, a)
       }
     })
-    return Rem_Data_Obj
+    return Rem_Data
   },
   watch(a,b){
     Rem_Watches.push({ var:a, func:b })
@@ -31,9 +31,9 @@ function Rem_js(str) {
   const checkKeywords = (a, b) => Boolean(a.split(',').filter(el => b.includes(el)).length)
   
   if (!checkKeywords(keywords, String(str))) {
-    Object.keys(Rem_Data_Obj).forEach(el => {
-      if (str.includes(el) && !str.includes('Rem_Data_Obj.'+el)) {
-        str = str.replaceAll(el, 'Rem_Data_Obj.' + el)
+    Object.keys(Rem_Data).forEach(el => {
+      if (str.includes(el) && !str.includes('Rem_Data.'+el)) {
+        str = str.replaceAll(el, 'Rem_Data.' + el)
       }
     })
     return new Function(`return ${str}`)()
@@ -58,7 +58,7 @@ function Rem_Update(zm, old, nw, pr) {
         if (sho.prop == 'text')  sho.prop = 'innerText'
         
         if (sho.prop == 'this') {
-          if (Rem_Data_Obj[sho.value] != e.el) Rem_Data_Obj[sho.value] = e.el 
+          if (Rem_Data[sho.value] != e.el) Rem_Data[sho.value] = e.el 
         }
         else if (sho.prop == 'className') {
           if (old !== undefined) {
@@ -74,7 +74,7 @@ function Rem_Update(zm, old, nw, pr) {
           }
         }
         else if (sho.prop == 'innerText'){
-          if (Rem_Data_Obj[sho.value] != e.el[sho.prop] ) Rem_Data_Obj[sho.value] = e.el[sho.prop] 
+          if (Rem_Data[sho.value] != e.el[sho.prop] ) Rem_Data[sho.value] = e.el[sho.prop] 
         }
         else e.el[sho.prop] = Rem_js(sho.value)
       }
@@ -108,9 +108,9 @@ function Rem_Update(zm, old, nw, pr) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (Rem_Data_Obj) {
-    for (const key of Object.keys(Rem_Data_Obj)) {
-      if(typeof(Rem_Data_Obj[key]) !== 'function') Rem_Store[key] = []
+  if (Rem_Data) {
+    for (const key of Object.keys(Rem_Data)) {
+      if(typeof(Rem_Data[key]) !== 'function') Rem_Store[key] = []
     }
   }
 
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (at.includes('value') || at.includes('checked')) {
         Rem_parseAttr(at).forEach(pars=>{
           if (pars.prop == 'value') ev = 'input'
-          el.addEventListener(ev, ()=>{Rem_Data_Obj[pars.value] = el[pars.prop]})
+          el.addEventListener(ev, ()=>{Rem_Data[pars.value] = el[pars.prop]})
         })
       }
       setStore(el,'bind')

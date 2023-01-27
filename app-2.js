@@ -10,12 +10,11 @@ const RemJs = {
       },
       set(d, a, b) {
         let old = d[a]
+        d[a] = b
         Rem_Watches.forEach(wch => {
           if (a === wch.var || wch.var === true) wch.func(old, b)
         })
-        d[a] = b
         Rem_Update(a, old, b, a)
-        // console.log(123);
       }
     })
     return Rem_Data

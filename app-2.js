@@ -215,11 +215,11 @@ document.addEventListener("DOMContentLoaded", () => {
       setStore(el, 'if')
       el.removeAttribute('if')
     }
-    else if (el.hasAttribute('css')) {
+    if (el.hasAttribute('css')) {
       setStore(el, 'css')
       el.removeAttribute('css')
     }
-    else if (el.hasAttribute('bind')) {
+    if (el.hasAttribute('bind')) {
       let ev = 'change'
       let at = el.getAttribute('bind')
       if (at.includes('value') || at.includes('checked')) {
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setStore(el, 'bind')
       el.removeAttribute('bind')
     }
-    else if (el.hasAttribute('on')) {
+    if (el.hasAttribute('on')) {
       Rem_parseAttr(el.getAttribute('on')).forEach(pars => {
         el.addEventListener(pars.prop, function () { Rem_js(pars.value) })
       })

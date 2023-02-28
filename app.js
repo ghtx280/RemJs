@@ -55,7 +55,6 @@ function Rem_Update(zm, old, nw, pr) {
             e.el.classList.remove(Rem_js(sho.value.replaceAll(zm, old)))
             e.el.classList.add(Rem_js(sho.value))
           } else {
-            console.log(Rem_js(sho.value));
             if (!e.el.className.includes(Rem_js(sho.value))) {
               e.el.className += ' ' + Rem_js(sho.value)
             }

@@ -72,12 +72,12 @@ function Rem_Update(zm, old, nw, pr) {
     if (e.css) {
       for (const sho of Rem_parseAttr(e.css)) e.el.style[sho.prop] = Rem_js(sho.value)
     }
-    if (e.for) {
+    if (e.each) {
       e.el.innerHTML = ''
-      for (const i in Rem_Data[e.for]) {
+      for (const i in Rem_Data[e.each]) {
         let elem = createElement(e.html)[0]?.cloneNode(true)
         if (!elem) break
-        let text = elem.innerHTML.replaceAll('$', `${e.for}[${i}]`)
+        let text = elem.innerHTML.replaceAll('$', `${e.each}[${i}]`)
         let prv = text
         let h = text.match(/\{([^}]+)\}/g)
         let d = h?.map(a => a.slice(1, a.length - 1).trim())
@@ -125,7 +125,7 @@ function setStore(elem, str, prevStr, id) {
       if (elem.getAttribute(str).includes(key)) {
         let obj = {}
         if (str === 'if') obj.html = Array.from(elem.children)
-        if (str === 'for') {
+        if (str === 'each') {
           obj.html = elem.innerHTML.trim()
           elem.innerHTML = ''
         }
@@ -146,8 +146,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectors = 'on,in,if,bind,css'
   const querySelAll = selectors.split(',').map(sel => `[${sel}]`).join()
 
-  for (const el of document.querySelectorAll('[for]')) {
-    setStore(el, 'for'); el.removeAttribute('for')
+  for (const el of document.querySelectorAll('[each]')) {
+    setStore(el, 'each'); el.removeAttribute('each')
   }
   for (const el of document.querySelectorAll('[in]')) {
     setStore(el, 'in'); el.removeAttribute('in')

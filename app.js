@@ -2,12 +2,6 @@
 const Rem_Data_Name = "Rem_Data" 
 const Rem_Watches = [];
 const Rem_Store = {}
-const Rem_Loaded = "DOMContentLoaded"
-const Rem_Listener = "addEventListener"
-
-const removeAttr = (el,at) => el.removeAttribute(at)
-const query = (str) => document.querySelectorAll(str)
-
 const RemJs = {
   data(dt) {
     Rem_Data = new Proxy(dt, {
@@ -23,19 +17,17 @@ const RemJs = {
     })
     return Rem_Data
   },
-  watch(a, b) { Rem_Watches.push({ var: a, func: b }) },
-  mounted(e) { window[Rem_Listener](Rem_Loaded, e) }
+  watch(a,b){ Rem_Watches.push({ var:a, func:b }) },
+  mounted(e){ addEventListener("DOMContentLoaded",e) }
 }
-window[Rem_Data_Name]  = undefined
-window.RemJs = RemJs
 
 function Rem_js(str) {
   const keywords = 'do,if,for,let,new,try,var,case,else,with,await,break,catch,class,const,super,throw,while,yield,delete,export,import,return,switch,default,extends,finally,continue,debugger,function,arguments,typeof,void'
   const checkKeywords = (a, b) => Boolean(a.split(',').filter(el => b.includes(el)).length)
   if (!checkKeywords(keywords, String(str))) {
     Object.keys(Rem_Data).forEach(el => {
-      if (str.includes(el) && !str.includes(Rem_Data_Name + '.' + el)) {
-        str = str.replaceAll(el, Rem_Data_Name + '.' + el)
+      if (str.includes(el) && !str.includes('Rem_Data.'+el)) {
+        str = str.replaceAll(el, 'Rem_Data.' + el)
       }
     })
     return new Function(`return ${str}`)()
@@ -78,23 +70,8 @@ function Rem_Update(zm, old, nw, pr) {
       else e.el.innerHTML = ''
     }
     if (e.css) {
-      for (const sho of Rem_parseAttr(e.css)) e.el.style[sho.prop] = Rem_js(sho.value)
-    }
-    if (e.each) {
-      e.el.innerHTML = ''
-      for (const i in Rem_Data[e.each]) {
-        let elem = createElement(e.html)[0]?.cloneNode(true)
-        if (!elem) break
-        let text = elem.innerHTML.replaceAll('$$', `${e.each}[${i}]`)
-        let prv = text
-        let h = text.match(/\{([^}]+)\}/g)
-        let d = h?.map(a => a.slice(1, a.length - 1).trim())
-        for (let c in d) text = text.replaceAll(h[c], Rem_js(d[c]))
-        removeAttr(elem,'in')
-        elem.innerHTML = text
-        e.el.append(elem)
-        setStore(elem, 'in', prv, i)
-      }
+      for (const sho of Rem_parseAttr(e.css))
+        e.el.style[sho.prop] = Rem_js(sho.value)
     }
     if (e.in) {
       let g = e.in
@@ -105,41 +82,34 @@ function Rem_Update(zm, old, nw, pr) {
     }
   })
 }
-function createElement(str) {
-  var div = document.createElement('div');
-  div.innerHTML = str;
-  return div.childNodes;
-}
-function setStore(elem, str, prevStr, id) {
-  if (str === 'in') {
-    let elStr = prevStr || elem.innerText
-    let keys = elStr.match(/\{([^}]+)\}/g)?.map(a=>a.slice(1, a.length - 1).trim())
-    for (const key in Rem_Store) {
-      if (keys?.filter(e => e.includes(key)).length) {
-        if (id) {
-          let curID = Rem_Store[key].filter(e => e.k == id)
-          if (!curID.length) {
-            Rem_Store[key].push({
-              el: elem,
-              [str]: elStr,
-              k: id
-            })
-          } else curID[0].el = elem
-        } else Rem_Store[key].push({el: elem, [str]: elStr})
-      }
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (Rem_Data) {
+    for (const key of Object.keys(Rem_Data)) {
+      if(typeof(Rem_Data[key]) !== 'function') Rem_Store[key] = []
     }
-  } else {
-    for (const key in Rem_Store) {
-      if (elem.getAttribute(str).includes(key)) {
-        let obj = {}
-        if (str === 'if') obj.html = Array.from(elem.children)
-        if (str === 'each') {
-          obj.html = elem.innerHTML.trim()
-          elem.innerHTML = ''
+  }
+
+  function setStore(elem,str){
+    if (str === 'in') {
+      let elStr = elem.innerText
+      let keys = elStr
+      .match(/\{([^}]+)\}/g)
+      .map(a=>a.slice(1,a.length-1).trim())
+
+      for (const key in Rem_Store) {
+        if (keys.filter(e=>e.includes(key))) Rem_Store[key].push({ el:elem, [str]:elStr })
+        Rem_Update(key)
+      }
+    } else{
+      for (const key in Rem_Store) {
+        if (elem.getAttribute(str).includes(key)){
+          let obj = {el:elem}
+          if (str === 'if') obj.html = Array.from(elem.children)
+          obj[str] = elem.getAttribute(str)
+          Rem_Store[key].push(obj)
         }
-        obj[str] = elem.getAttribute(str)
-        obj.el = elem
-        Rem_Store[key].push(obj)
+        Rem_Update(key)
       }
     }
   }
@@ -154,20 +124,15 @@ document[Rem_Listener](Rem_Loaded, () => {
   const selectors = 'on,in,if,bind,css'
   const querySelAll = selectors.split(',').map(sel => `[${sel}]`).join()
 
-
-
-  for (const el of query('[each]')) {
-    setStore(el, 'each'); removeAttr(el,'each')
-  }
-  for (const el of query('[in]')) {
-    setStore(el, 'in'); removeAttr(el,'in')
-  }
-  for (const el of query(querySelAll)) {
-    if (el.hasAttribute('if')) {
-      setStore(el, 'if'); removeAttr(el,'if')
-    }
-    if (el.hasAttribute('css')) {
-      setStore(el, 'css'); removeAttr(el,'css')
+  for (const el of document.querySelectorAll(querySelAll)) {
+    if (el.hasAttribute('in')  ) {
+      setStore(el,'in'); el.removeAttribute('in')
+    }   
+    if (el.hasAttribute('if')  ) {
+      setStore(el,'if'); el.removeAttribute('if')
+    }    
+    if (el.hasAttribute('css') ) {
+      setStore(el,'css'); el.removeAttribute('css')
     }
     if (el.hasAttribute('bind')) {
       let ev = 'change'
@@ -175,17 +140,17 @@ document[Rem_Listener](Rem_Loaded, () => {
       if (at.includes('value') || at.includes('checked')) {
         Rem_parseAttr(at).forEach(pars => {
           if (pars.prop == 'value') ev = 'input'
-          el[Rem_Listener](ev, () => { Rem_Data[pars.value] = el[pars.prop] })
+          el.addEventListener(ev, ()=>{Rem_Data[pars.value] = el[pars.prop]})
         })
       }
-      setStore(el, 'bind'); removeAttr(el,'bind')
-    }
+      setStore(el,'bind'); el.removeAttribute('bind')
+    }   
     if (el.hasAttribute('on')) {
-      Rem_parseAttr(el.getAttribute('on')).forEach(pars => {
-        el[Rem_Listener](pars.prop, function () { Rem_js(pars.value) })
-      }); removeAttr(el,'on')
+      Rem_parseAttr(el.getAttribute('on')).forEach(pars=>{
+        el.addEventListener(pars.prop,function(){Rem_js(pars.value)})
+      })
+      el.removeAttribute('on')
     }
   }
   for (const key in Rem_Store) Rem_Update(key)
 })
-})()

@@ -77,7 +77,7 @@ function Rem_Update(zm, old, nw, pr) {
       for (const i in Rem_Data[e.each]) {
         let elem = createElement(e.html)[0]?.cloneNode(true)
         if (!elem) break
-        let text = elem.innerHTML.replaceAll('$', `${e.each}[${i}]`)
+        let text = elem.innerHTML.replaceAll('$$', `${e.each}[${i}]`)
         let prv = text
         let h = text.match(/\{([^}]+)\}/g)
         let d = h?.map(a => a.slice(1, a.length - 1).trim())

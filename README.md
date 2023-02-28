@@ -2,7 +2,7 @@
 ## [Playground](https://codesandbox.io/s/sharp-bas-o8gzju?file=/index.html)
 ## Usage
 ```html
-<script src="https://remjs.netlify.app/app.min.js"></script>
+<script src="https://unpkg.com/reemjs"></script>
 ```
 Put this code in your `head` tag
 ***

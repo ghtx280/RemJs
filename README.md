@@ -1,4 +1,5 @@
 ### **A very compact and small library that provides reactivity technology to your code, like vue or react.**
+## [Playground](https://codesandbox.io/s/sharp-bas-o8gzju?file=/index.html)
 ## Usage
 ```html
 <script src="https://remjs.netlify.app/app.min.js"></script>

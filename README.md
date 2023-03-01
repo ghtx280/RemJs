@@ -6,7 +6,112 @@
 ```
 Put this code in your `head` tag
 ***
-After you've included the library, add the code below to your `body` tag
+After connecting the library, add code below to your tag `body`
+```html
+<script>
+  RemJs.data({
+    userName:"Tony",
+    num:228,
+    status:true,
+    arr:[1,2,3,4,5]
+  })
+</script>
+```
+The object inside the `data()` function is a list with your variables. You can write any variable and then use them in your HTML
+***
+
+
+
+
+
+
+
+
+
+```html
+<p in>hello {userName}</p>
+```
+Use a special attribute `in` to insert your variable in HTML element. Write the variables in `{ }` to display them
+
+```html
+<p in>your number is {num * 2}</p>
+```
+In the brackets you can also write any 'JS' expression, but there should be the presence of at least one variable, in the other it will not work
+***
+
+
+
+
+
+
+
+
+
+
+## attribute if
+```html
+<div if="num > 5">
+  <p>number more than 5</p>
+</div>
+```
+Use the `if` attribute to hide and show the element depending on the condition
+***
+## attribute bind
+```html
+<input bind="checked:status" type="checkbox">
+```
+Use attribute `bind` to tie the property of an element with your variable
+***
+## attribute css
+```html
+<p css="fontSize:num">Lorem ipsum</p>
+```
+Use attribute `css` to dynamically change the styles of your element
+***
+## attribute on
+```html
+<input on="click:num++" type="checkbox">
+```
+Use attribute `on` to add an event to your HTML element
+***
+## attribute each
+```html
+<ul each="arr">
+  <li>item {$$}</li>
+</ul>
+```
+Use attribute `each`, to iterate the array. In the middle of the block with this attribute, there should be only 1 element that will be repeated, all content and other elements should be placed in it. Use '$$' to get the current array item
+<br>
+*This attribute is still in development, many things may not work.
+***
+## Work in script
+```js
+const dt = RemJs.data({
+  userName:"Tony",
+  num:228,
+  status:true,
+  arr:[1,2,3,4,5]
+})
+
+console.log(dt.num)
+
+dt.num = 123
+console.log(dt.num)
+```
+To work with variables in the script, you need to return the object from the function `data()`
+
+****
+
+
+
+
+
+
+
+
+## Examples
+
+
 ```html
 <button on="click: count++" in>
   count is: {count}
@@ -17,25 +122,9 @@ After you've included the library, add the code below to your `body` tag
 </script>
 ```
 live preview [click](https://remjs.netlify.app/tests/1)
-***
-Use special attributes to change the content on the page:
-- if - hides or shows the element depending on the condition `if="cond"` 
 
-example: `if="num > 5"`
-- on - adds listener events to the element `on="event:your_code"`
 
-example: `on="click:num++"`
-- in - is used to insert a variable into the text of an element `<p in>{your_code}</p>`
 
-example: `<p in>your name {userName}</p>`
-- css - used to style elements `css="css_property:your_code"`
-
-example: `css="color: isValid ? 'green' : 'red'"`
-- bind - use to bind some element value to a variable `bind="element_property:your_code"`
-
-example: `<input bind="value: userName>"`
-****
-To change variables through a script, use the object that will return data()
 ```html
 <h1>
   color is:

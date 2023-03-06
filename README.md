@@ -70,7 +70,7 @@ Use attribute `css` to dynamically change the styles of your element
 ***
 ## attribute on
 ```html
-<input on="click:num++" type="checkbox">
+<button on="click:num++">{num}</button>
 ```
 Use attribute `on` to add an event to your HTML element
 ***
